@@ -1,16 +1,21 @@
 {
-  "name": "frontend",
+  "name": "dsc-protocol-frontend",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --experimental-test-module-mocks --test tests/*.test.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.9",
     "@tanstack/react-query": "^5.90.5",
+    "geist": "^1.8.2",
     "next": "15.5.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -19,13 +24,18 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.1.14",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.5.6",
-    "tailwindcss": "^4",
+    "prettier": "^3.9.10",
+    "tailwindcss": "^4.1.14",
     "typescript": "^5"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
   }
 }
