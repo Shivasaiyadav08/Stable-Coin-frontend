@@ -18,7 +18,6 @@ liquidity, or stable-value guarantee is implied.
   <img src="https://img.shields.io/badge/Network-Testnet-blueviolet" />
 </div>
 
-
 ## Local setup
 
 Use Node.js 24 and npm. Local setup, CI and Vercel use the same major version:
@@ -48,7 +47,6 @@ use a public, domain-restricted RPC credential rather than a private server key.
 Restart the dev server after environment changes. Set these variables before
 building a deployed app.
 
-
 ## Tech Stack
 
 <p align="center">
@@ -72,8 +70,6 @@ building a deployed app.
   </a>
   <img src="https://img.shields.io/badge/Ethereum-Sepolia-627EEA?style=for-the-badge&logo=ethereum&logoColor=white" alt="Ethereum Sepolia" />
 </p>
-
-
 
 ## Routes
 
