@@ -8,7 +8,6 @@ This is experimental testnet software. No production deployment, audit status,
 liquidity, or stable-value guarantee is implied.
 
 <div align="center">
-  <img src="./public/logo.svg" alt="DSC Protocol" width="140" />
 
   <h1>DSC Protocol</h1>
   <p>Decentralized Stablecoin Interface on Ethereum Sepolia</p>
