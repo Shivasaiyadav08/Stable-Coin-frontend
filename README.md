@@ -4,12 +4,21 @@ A Next.js interface for the DSC Engine on Ethereum Sepolia. Visitors can learn
 about the project, inspect public positions without a wallet, and manage their
 own collateral and DSC debt.
 
-The interface uses a single **Midnight Finance** theme: navy surfaces, violet
-actions, cyan signals, and locally served Geist typography. There is no theme
-switcher or stored theme preference.
-
 This is experimental testnet software. No production deployment, audit status,
 liquidity, or stable-value guarantee is implied.
+
+<div align="center">
+  <img src="./public/logo.svg" alt="DSC Protocol" width="140" />
+
+  <h1>DSC Protocol</h1>
+  <p>Decentralized Stablecoin Interface on Ethereum Sepolia</p>
+
+  <img src="https://img.shields.io/badge/Next.js-15-black?logo=nextdotjs" />
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white" />
+  <img src="https://img.shields.io/badge/Ethereum-Sepolia-627EEA?logo=ethereum&logoColor=white" />
+  <img src="https://img.shields.io/badge/Network-Testnet-blueviolet" />
+</div>
+
 
 ## Local setup
 
@@ -39,6 +48,12 @@ dedicated RPC URL. Every `NEXT_PUBLIC_` value is included in the browser bundle:
 use a public, domain-restricted RPC credential rather than a private server key.
 Restart the dev server after environment changes. Set these variables before
 building a deployed app.
+
+## Tech Stack
+
+<p align="left">
+  <img src="https://skillicons.dev/icons?i=nextjs,ts,react,tailwind,solidity,nodejs,vercel,github" alt="Tech Stack" />
+</p>
 
 ## Routes
 
