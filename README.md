@@ -48,11 +48,32 @@ use a public, domain-restricted RPC credential rather than a private server key.
 Restart the dev server after environment changes. Set these variables before
 building a deployed app.
 
+
 ## Tech Stack
 
-<p align="left">
-  <img src="https://skillicons.dev/icons?i=nextjs,ts,react,tailwind,solidity,nodejs,vercel,github" alt="Tech Stack" />
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=nextjs,ts,react,tailwind,solidity,nodejs,vercel,github" alt="Core Technology Stack" />
 </p>
+
+### Web3 & Blockchain
+
+<p align="center">
+  <a href="https://rainbowkit.com">
+    <img src="https://img.shields.io/badge/RainbowKit-2.2.11-7B3FE4?style=for-the-badge" alt="RainbowKit" />
+  </a>
+  <a href="https://wagmi.sh">
+    <img src="https://img.shields.io/badge/Wagmi-2.18.1-181717?style=for-the-badge&logo=wagmi&logoColor=white" alt="Wagmi" />
+  </a>
+  <a href="https://viem.sh">
+    <img src="https://custom-icon-badges.demolab.com/badge/Viem-2.57.11-FFC517?style=for-the-badge&logo=viem-dark" alt="Viem" />
+  </a>
+  <a href="https://tanstack.com/query">
+    <img src="https://img.shields.io/badge/TanStack_Query-v5-FF4154?style=for-the-badge&logo=reactquery&logoColor=white" alt="TanStack Query" />
+  </a>
+  <img src="https://img.shields.io/badge/Ethereum-Sepolia-627EEA?style=for-the-badge&logo=ethereum&logoColor=white" alt="Ethereum Sepolia" />
+</p>
+
+
 
 ## Routes
 
