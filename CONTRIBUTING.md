@@ -1,6 +1,6 @@
 # Contributing to the DSC frontend
 
-Use Node.js 24 (22.18 or later is supported), install with `npm ci`, and follow
+Use Node.js 24, install with `npm ci`, and follow
 the README to run locally. Browser wallets work without a WalletConnect ID.
 Only Sepolia has a configured deployment.
 
@@ -9,7 +9,11 @@ Only Sepolia has a configured deployment.
 - Prefer plain components, semantic HTML, Tailwind utilities, and the shared
   Midnight Finance CSS tokens. There is one theme; do not add alternate palettes.
 - Keep contract reads in `src/hooks/useProtocol.ts` and transaction sequencing
-  in `src/lib/transactions.ts`.
+  in `src/lib/transactions.ts`. Position form state and validation belong in
+  `src/hooks/useManagePosition.ts`; `ManagePosition.tsx` renders the form.
+- Use the same action names as the interface: deposit, mint, burn, and redeem.
+  Prefer named functions and early returns to deeply nested conditions. Add a
+  comment where it explains a contract rule or an important sequencing decision.
 - Keep financial calculations in bigint. Parse human input with token decimals;
   never use floating point or silently round transaction amounts.
 - Never turn a failed RPC request into a zero balance or an assumed price.

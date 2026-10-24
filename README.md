@@ -13,7 +13,7 @@ liquidity, or stable-value guarantee is implied.
 
 ## Local setup
 
-Use Node.js 24 (minimum 22.18) and npm:
+Use Node.js 24 and npm. Local setup, CI and Vercel use the same major version:
 
 ```sh
 npm ci
@@ -42,17 +42,19 @@ building a deployed app.
 
 ## Routes
 
-| Route        | Purpose                                                     |
-| ------------ | ----------------------------------------------------------- |
-| `/`          | Public project overview and protocol workflow               |
-| `/dashboard` | Wallet position, deposit, mint, repay, and withdraw         |
-| `/explore`   | Public account lookup and eligible liquidation              |
-| `/docs`      | Getting started, risks, transaction flow, and contributions |
+| Route        | Purpose                                                        |
+| ------------ | -------------------------------------------------------------- |
+| `/`          | Public project overview and protocol workflow                  |
+| `/dashboard` | Wallet position, deposit, mint, burn, and redeem               |
+| `/explore`   | Public account lookup and eligible liquidation                 |
+| `/docs`      | Getting started, contract rules, transactions, and attribution |
 
 ## Code map
 
 - `src/lib/contracts.ts`: network, deployment address, and readable engine ABI.
 - `src/hooks/useProtocol.ts`: shared protocol and account queries.
+- `src/hooks/useManagePosition.ts`: form state, validation, review, and action preparation.
+- `src/components/ManagePosition.tsx`: position form markup, using the hook above.
 - `src/lib/amounts.ts`: integer amount parsing, formatting, and health calculations.
 - `src/lib/transactions.ts`: exact approvals, simulation, signatures, and receipts.
 - `src/components/TransactionProvider.tsx`: transaction feedback and query refresh.
@@ -61,6 +63,18 @@ building a deployed app.
 - `src/components/ProtocolMechanics.tsx`: clearly labeled educational example.
 - `src/lib/risk.ts`: position status using the contract's liquidation boundary.
 - `src/app/globals.css`: one token palette, responsive styles, and native motion.
+
+Read the position workflow in this order:
+
+1. `src/app/dashboard/page.tsx` puts the dashboard together.
+2. `src/components/ManagePosition.tsx` renders the form and calls its hook.
+3. `src/hooks/useManagePosition.ts` validates input, previews the position, then requests execution.
+4. `src/lib/transactions.ts` handles token approval, simulation, wallet signatures, and receipts.
+5. `src/components/TransactionProvider.tsx` shows progress and refreshes the shared queries.
+
+Page markup stays in `app/`, reusable interface elements in `components/`, React
+state and queries in `hooks/`, and contract definitions and calculations in `lib/`.
+The form follows the contract minimum; it adds no extra risk threshold.
 
 The interface discovers the DSC token, approved collateral, token decimals,
 and liquidation parameters from the engine. Sepolia is the only enabled
@@ -83,6 +97,17 @@ and state may change, so the contract remains the final validator. Inputs are
 cleared only after confirmation. Confirmed transactions refresh shared queries;
 positions also refresh every 15 seconds while visible. A refresh failure after
 confirmation is reported separately from a failed transaction.
+
+## Framework security updates
+
+The project uses Next.js and its ESLint configuration at `15.5.28`. Vercel blocks
+the older `15.5.6` version even when compilation succeeds. The scoped `sharp`
+override in `package.json` keeps Next.js's image-processing dependency at `0.35.5`
+instead of retaining the vulnerable version in an older lockfile. See the
+[official security update](https://nextjs.org/blog/nextjs-security-update-october-14-2026).
+
+After dependency changes, include both `package.json` and `package-lock.json` in
+your update so Vercel installs the same versions. Do not bypass the security block.
 
 Theoretical mint capacity is not a recommended borrowing target. Max uses the
 contract boundary, which can leave no health buffer. Position status follows

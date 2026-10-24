@@ -124,7 +124,7 @@ export default function LiquidationForm({ target }: { target: Address }) {
           title={
             position.debt === 0n
               ? 'This position has no debt'
-              : 'This position is above the minimum health factor'
+              : 'This position meets the minimum health factor'
           }
         >
           Liquidation is unavailable for this account.

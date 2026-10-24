@@ -22,7 +22,9 @@ commit, push, or smart-contract repository change is part of this work.
 | `src/components/ProtocolMechanics.tsx`   | Explicitly educational debt slider, separate from account data                                             |
 | `src/components/RiskGauge.tsx`           | Reusable health-factor instrument, with no invented historical data                                        |
 | `src/components/PositionSummary.tsx`     | Actual balances, debt, capacity, contract health status and block number                                   |
-| `src/components/ManagePosition.tsx`      | Existing transaction form with review, debt impact and contract health checks                              |
+| `src/components/ManagePosition.tsx`      | Form markup using the position action hook                                                                 |
+| `src/hooks/useManagePosition.ts`         | Form state, input validation, position review and transaction preparation                                  |
+| `src/components/GitHubLink.tsx`          | Accessible repository link and isolated SVG icon                                                           |
 | `src/components/TransactionProvider.tsx` | Existing receipt/refresh logic with visible transaction stages                                             |
 | `src/lib/contracts.ts`                   | Preserved ABI/address; added deployment token address, attribution and disclaimer constants                |
 | `src/lib/risk.ts`                        | Readable presentation-only risk classification                                                             |
@@ -115,3 +117,40 @@ Executed during implementation:
 Reduced-motion fallbacks were reviewed in the code; no OS preference was changed
 to emulate that mode. The existing unreadable collateral remains the only
 deployment issue identified by these checks. This is not a contract audit.
+
+## Readability and deployment maintenance
+
+The position form now keeps its state and contract interaction in
+`useManagePosition.ts`. `ManagePosition.tsx` renders the controls and review.
+The action names are deposit, mint, burn and redeem throughout this workflow.
+Named label functions replace nested conditions, and transaction updates share
+one state-update function. The existing approval and receipt service is preserved.
+The README includes a short reading order for new contributors.
+
+The supplied Vercel log compiled successfully, then failed a dependency security
+check for Next.js 15.5.6. Next.js and `eslint-config-next` are updated to 15.5.28.
+A scoped override updates Next.js's retained `sharp` dependency to 0.35.5.
+Node.js is pinned to 24.x, matching `.nvmrc` and CI. See the
+[official security update](https://nextjs.org/blog/nextjs-security-update-october-14-2026).
+
+`npm install` still reports 43 dependency advisories (23 high, 20 moderate).
+These include the wallet dependency tree and Next.js's transitive PostCSS
+dependency; npm proposes major framework/wallet upgrades for direct-package fixes.
+This maintenance change does not claim the full dependency tree is vulnerability-free.
+No commit, push, remote deployment or blockchain transaction is part of this update.
+
+Validation after the cleanup:
+
+- TypeScript, ESLint, all 19 existing tests, formatting, and the Next.js 15.5.28
+  production build passed.
+- Sharp 0.35.5 loaded its native library and generated a small PNG successfully.
+- The production browser switched between all four position actions. Collateral
+  selection appeared for Deposit and Redeem, and disconnected inputs and submit
+  buttons stayed disabled.
+- Invalid explorer input showed its validation message. A public engine-address
+  lookup returned live Sepolia account data at block 11983717.
+- Dashboard widths 320, 375, 768, 1024, and 1440 had no horizontal overflow.
+  Landing, dashboard, explorer and guide navigation worked without captured
+  browser errors or warnings.
+- No real wallet was connected and no transaction was signed. Existing mocked
+  transaction tests do not substitute for a funded-wallet integration test.

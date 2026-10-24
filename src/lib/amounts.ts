@@ -51,7 +51,7 @@ export function healthAfter(
   liquidationPrecision: bigint,
   precision: bigint,
 ): bigint | null {
-  return debt === 0n
-    ? null
-    : (((collateralUsd * threshold) / liquidationPrecision) * precision) / debt;
+  if (debt === 0n) return null;
+  const adjustedCollateral = (collateralUsd * threshold) / liquidationPrecision;
+  return (adjustedCollateral * precision) / debt;
 }

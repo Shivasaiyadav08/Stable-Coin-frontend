@@ -19,12 +19,29 @@ type TransactionContextValue = {
 };
 const TransactionContext = createContext<TransactionContextValue | null>(null);
 
+function getFeedbackTone(transaction: TransactionState | null) {
+  if (transaction?.stage === 'error') return 'error';
+  if (transaction?.refreshWarning) return 'warning';
+  if (transaction?.stage === 'success') return 'success';
+  return 'info';
+}
+
+function getProgressLabel(stage: TransactionProgress['stage']) {
+  if (stage === 'success') return 'Confirmed';
+  if (stage === 'error') return 'Needs attention';
+  return 'In progress';
+}
+
 export function TransactionProvider({ children }: { children: ReactNode }) {
   const config = useConfig();
   const queries = useQueryClient();
   const locked = useRef(false);
   const [busy, setBusy] = useState(false);
   const [transaction, setTransaction] = useState<TransactionState | null>(null);
+
+  function updateTransaction(changes: Partial<TransactionState>) {
+    setTransaction((previous) => (previous ? { ...previous, ...changes } : previous));
+  }
 
   async function refreshData() {
     await Promise.all([
@@ -43,36 +60,20 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
       message: 'Checking the transaction…',
     });
     try {
-      await sendTransaction(config, request, (progress) => {
-        setTransaction((previous) => (previous ? { ...previous, ...progress } : previous));
+      await sendTransaction(config, request, updateTransaction);
+      updateTransaction({
+        stage: 'success',
+        message: 'Confirmed on Sepolia. Updating account data…',
       });
-      setTransaction((previous) =>
-        previous
-          ? {
-              ...previous,
-              stage: 'success',
-              message: 'Confirmed on Sepolia. Updating account data…',
-            }
-          : previous,
-      );
       try {
         await refreshData();
-        setTransaction((previous) =>
-          previous
-            ? { ...previous, message: 'Confirmed on Sepolia. Account data has been refreshed.' }
-            : previous,
-        );
+        updateTransaction({ message: 'Confirmed on Sepolia. Account data has been refreshed.' });
       } catch {
-        setTransaction((previous) =>
-          previous
-            ? {
-                ...previous,
-                refreshWarning: true,
-                message:
-                  'The transaction is confirmed, but account data could not refresh. Retry the refresh; do not resubmit the transaction.',
-              }
-            : previous,
-        );
+        updateTransaction({
+          refreshWarning: true,
+          message:
+            'The transaction is confirmed, but account data could not refresh. Retry the refresh; do not resubmit the transaction.',
+        });
       }
       return true;
     } catch (error) {
@@ -89,22 +90,26 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const tone =
-    transaction?.stage === 'error'
-      ? 'error'
-      : transaction?.refreshWarning
-        ? 'warning'
-        : transaction?.stage === 'success'
-          ? 'success'
-          : 'info';
+  async function retryRefresh() {
+    try {
+      await refreshData();
+      updateTransaction({
+        refreshWarning: false,
+        message: 'Confirmed on Sepolia. Account data has been refreshed.',
+      });
+    } catch {
+      // Keep the visible warning until a refresh succeeds.
+    }
+  }
+
   return (
     <TransactionContext.Provider value={{ busy, run }}>
       {children}
       {transaction ? (
         <aside className="transaction-notice" aria-label="Transaction progress">
           <Feedback
-            tone={tone}
-            title={`${transaction.label} · ${transaction.stage === 'success' ? 'Confirmed' : transaction.stage === 'error' ? 'Needs attention' : 'In progress'}`}
+            tone={getFeedbackTone(transaction)}
+            title={`${transaction.label} · ${getProgressLabel(transaction.stage)}`}
           >
             <ol className="transaction-steps" aria-label="Transaction stages">
               {transaction.approvalHash || transaction.stage === 'approval' ? (
@@ -145,25 +150,7 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
                 </a>
               ) : null}
               {transaction.refreshWarning ? (
-                <button
-                  className="text-button"
-                  onClick={async () => {
-                    try {
-                      await refreshData();
-                      setTransaction((previous) =>
-                        previous
-                          ? {
-                              ...previous,
-                              refreshWarning: false,
-                              message: 'Confirmed on Sepolia. Account data has been refreshed.',
-                            }
-                          : previous,
-                      );
-                    } catch {
-                      /* Keep the visible warning until a refresh succeeds. */
-                    }
-                  }}
-                >
+                <button className="text-button" onClick={retryRefresh}>
                   Refresh data
                 </button>
               ) : null}
