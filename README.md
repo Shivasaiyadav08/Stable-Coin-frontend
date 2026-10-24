@@ -98,6 +98,10 @@ cleared only after confirmation. Confirmed transactions refresh shared queries;
 positions also refresh every 15 seconds while visible. A refresh failure after
 confirmation is reported separately from a failed transaction.
 
+Theoretical mint capacity is not a recommended borrowing target. Max uses the
+contract boundary, which can leave no health buffer. Position status follows
+only the contract minimum; there are no additional frontend risk thresholds.
+
 ## Framework security updates
 
 The project uses Next.js and its ESLint configuration at `15.5.28`. Vercel blocks
@@ -106,12 +110,19 @@ override in `package.json` keeps Next.js's image-processing dependency at `0.35.
 instead of retaining the vulnerable version in an older lockfile. See the
 [official security update](https://nextjs.org/blog/nextjs-security-update-october-14-2026).
 
+The Web3 stack remains on compatible major versions: RainbowKit `2.2.11`,
+Wagmi `2.18.1`, and Viem `2.57.11`. Wagmi stays pinned to the working release;
+the newer connector tree imports optional Coinbase payment modules that break
+this Next.js build. Two other overrides keep PostCSS at `8.5.31`
+and WebSocket 8 dependencies at `8.21.0`. These replace vulnerable pinned copies
+inside other packages; they do not add new application code.
+
 After dependency changes, include both `package.json` and `package-lock.json` in
 your update so Vercel installs the same versions. Do not bypass the security block.
-
-Theoretical mint capacity is not a recommended borrowing target. Max uses the
-contract boundary, which can leave no health buffer. Position status follows
-only the contract minimum; there are no additional frontend risk thresholds.
+The latest audit still reports wallet SDK advisories. See the
+[dependency review](docs/MIDNIGHT_FINANCE.md#dependency-maintenance-follow-up)
+for remaining issues and compatibility limits. Avoid `npm audit fix --force`:
+RainbowKit currently requires Wagmi 2, while npm proposes Wagmi 3 for some fixes.
 
 ## Design and attribution
 

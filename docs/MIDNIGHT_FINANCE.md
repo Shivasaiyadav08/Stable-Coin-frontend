@@ -133,10 +133,8 @@ A scoped override updates Next.js's retained `sharp` dependency to 0.35.5.
 Node.js is pinned to 24.x, matching `.nvmrc` and CI. See the
 [official security update](https://nextjs.org/blog/nextjs-security-update-october-14-2026).
 
-`npm install` still reports 43 dependency advisories (23 high, 20 moderate).
-These include the wallet dependency tree and Next.js's transitive PostCSS
-dependency; npm proposes major framework/wallet upgrades for direct-package fixes.
-This maintenance change does not claim the full dependency tree is vulnerability-free.
+The initial cleanup reported 43 dependency advisories (23 high, 20 moderate).
+The follow-up below records the current dependency review and remaining findings.
 No commit, push, remote deployment or blockchain transaction is part of this update.
 
 Validation after the cleanup:
@@ -154,3 +152,63 @@ Validation after the cleanup:
   browser errors or warnings.
 - No real wallet was connected and no transaction was signed. Existing mocked
   transaction tests do not substitute for a funded-wallet integration test.
+
+## Dependency maintenance follow-up
+
+Compatible updates and non-forced audit fixes reduced the audit from 43 findings
+to **24: 10 high and 14 moderate**, with no critical findings. These counts refer
+to affected packages, including packages inheriting a finding from a dependency.
+Next.js, PostCSS and WebSocket no longer appear in the audit report.
+
+| Package                 | Selected version | Reason                                                  |
+| ----------------------- | ---------------- | ------------------------------------------------------- |
+| RainbowKit              | 2.2.11           | Latest compatible release; requires Wagmi 2             |
+| Wagmi                   | 2.18.1           | Pinned working connector tree                           |
+| Viem                    | 2.57.11          | Updated within the existing major version               |
+| PostCSS                 | 8.5.31           | Override replaces Next.js's pinned 8.4.31 copy          |
+| WebSocket (`ws`)        | 8.21.0           | Override patches only existing WebSocket 8 dependencies |
+| Next.js / ESLint config | 15.5.28          | Retained framework security patch                       |
+| Sharp                   | 0.35.5           | Retained image-processing security override             |
+
+`npm audit fix` was run without `--force`. Its compatible transitive fixes are
+recorded in `package-lock.json`. Contract interaction logic, addresses, ABIs and
+health rules did not change in this follow-up. A small `globals.css` correction
+lets RainbowKit's compact dialog fit 320px screens: its library minimum width
+otherwise places the close button outside the viewport.
+
+Wagmi remains pinned because the 2.19.5 connector tree brings in Base Account
+2.4.0 and Coinbase CDP SDK 1.60.0. Their optional x402 payment imports fail to
+resolve in this Turbopack build. The working 2.18.1 connector tree is retained;
+no payment dependencies are added to the application.
+
+The remaining findings originate in wallet SDK dependencies:
+
+| Root dependency      | Installed copies                  | Why it is not forcibly overridden                                                                     |
+| -------------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Zod                  | 3.22.4 / 3.25.76                  | The patched release is 4.6.6; replacing Zod 3 requires schema compatibility work in its SDK consumers |
+| UUID                 | 8.3.2 and other older SDK copies  | The patched release starts at 11.1.1, outside the SDKs' declared major versions                       |
+| decode-uri-component | 0.2.2, through query-string 7.1.3 | The fixed 0.5.1 release is ESM; the installed consumer uses CommonJS                                  |
+
+RainbowKit 2.2.11 declares `wagmi: ^2.9.0`. npm's suggested forced upgrade to
+Wagmi 3.7.9 would violate that peer requirement. No audit findings are suppressed,
+and the current dependency tree is not claimed to be vulnerability-free.
+
+Sources: [Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5),
+[UUID advisory](https://github.com/advisories/GHSA-w5hq-g745-h8pq),
+[URI decoder advisory](https://github.com/advisories/GHSA-vcc3-ghjq-m6fr),
+[PostCSS release](https://github.com/postcss/postcss/releases/tag/8.5.31).
+Package versions, peer requirements and module formats were checked using npm's registry.
+
+Final validation for this follow-up:
+
+- The final lockfile passed `npm ci --dry-run --ignore-scripts --no-audit --no-fund`.
+- TypeScript, ESLint, formatting, all 19 tests, and the production build passed.
+- The production wallet dialog opened at desktop width and 320px. The phone
+  correction kept its close button within the viewport, and clicking it closed
+  the dialog successfully.
+- Public account lookup returned actual Sepolia data at block 11984217 using the
+  updated Viem release. The phone layout had no horizontal overflow.
+- No browser errors or warnings were captured during these checks. No real
+  wallet was connected and no on-chain transaction was signed.
+- The final audit returned 24 findings. `next`, `postcss`, `ws` and `sharp` were
+  absent from the vulnerability report. The remaining findings are documented above.
