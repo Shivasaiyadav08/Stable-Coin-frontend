@@ -27,7 +27,7 @@ export default function WalletButton() {
         return (
           <button className="button button-secondary wallet-button" onClick={openAccountModal}>
             <span className="status-dot" />
-            {account.displayName}
+            <span className="wallet-address">{account.displayName}</span>
           </button>
         );
       }}

@@ -275,10 +275,32 @@ svg {
 .main-nav a[aria-current]::after {
   transform: scaleX(1);
 }
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.github-link:hover {
+  color: var(--text);
+  background: var(--surface);
+  border-color: var(--muted);
+}
 .header-actions {
   display: flex;
   gap: 22px;
   align-items: center;
+}
+.wallet-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .network-status {
   display: inline-flex;
@@ -348,6 +370,11 @@ svg {
 }
 .wallet-button {
   white-space: nowrap;
+}
+.wallet-address {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .text-link,
 .text-button {
@@ -2261,15 +2288,30 @@ input[aria-invalid='true'] {
     display: none;
   }
 }
-@media (max-width: 680px) {
-  .container {
-    width: calc(100% - 36px);
-  }
+@media (max-width: 760px) {
   .header-inner {
     min-height: 74px;
     flex-wrap: wrap;
     gap: 0;
     padding-top: 14px;
+  }
+  .header-actions {
+    margin-left: auto;
+  }
+  .main-nav {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    font-size: 11px;
+    gap: 12px;
+  }
+  .main-nav a {
+    padding-block: 17px 14px;
+  }
+}
+@media (max-width: 680px) {
+  .container {
+    width: calc(100% - 36px);
   }
   .brand {
     font-size: 18px;
@@ -2283,23 +2325,17 @@ input[aria-invalid='true'] {
     display: none;
   }
   .header-actions {
-    margin-left: auto;
-    gap: 10px;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
   }
   .header-actions .button {
     min-height: 44px;
     padding: 10px 13px;
     font-size: 11px;
   }
-  .main-nav {
-    order: 3;
-    width: 100%;
-    justify-content: space-between;
-    font-size: 11px;
-    gap: 12px;
-  }
-  .main-nav a {
-    padding-block: 17px 14px;
+  .wallet-address {
+    max-width: 110px;
   }
   .hero {
     padding-top: 22px;
